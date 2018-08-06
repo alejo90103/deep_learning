@@ -6,82 +6,149 @@
 
   <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" type="text/css" rel="stylesheet"/>
-  <link href="/regular_expression/index.css" type="text/css" rel="stylesheet"/>
 
 </head>
 <body>
   <div class="container">
+    <div class="text-center pt-5">
+      <label for="basic-url">Select a temperature</label>
+      <div class="input-group mb-3 w-25 mx-auto">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="basic-addon3">#</span>
+        </div>
+        <input id="temp" type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3">
+
+      </div>
+      <button id="temp_btn" type="button" class="btn btn-primary btn-sm">Suggest</button>
+    </div>
+    <div class="row pt-5">
+      <div class="col-sm">
+        <figure class="figure">
+          <img id="image_0" src="/deep_learning/img/jacket.jpg" class="rounded" style="height: 200px; width: 200px" alt="...">
+          <figcaption id="0" class="figure-caption text-center"></figcaption>
+        </figure>
+      </div>
+      <div class="col-sm">
+        <figure class="figure">
+          <img id="image_1" src="/deep_learning/img/sweater.jpg" class="rounded" style="height: 200px; width: 200px" alt="...">
+          <figcaption id="1" class="figure-caption text-center"></figcaption>
+        </figure>
+      </div>
+      <div class="col-sm">
+        <figure class="figure">
+          <img id="image_2" src="/deep_learning/img/t-shirt.jpg" class="rounded" style="height: 200px; width: 200px" alt="...">
+          <figcaption id="2" class="figure-caption text-center"></figcaption>
+        </figure>
+      </div>
+      <div class="col-sm">
+        <figure class="figure">
+          <img id="image_3" src="/deep_learning/img/nothing.jpg" class="rounded" style="height: 200px; width: 200px" alt="...">
+          <figcaption id="3" class="figure-caption text-center"></figcaption>
+        </figure>
+      </div>
+    </div>
 
   </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/synaptic/1.0.8/synaptic.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
 
   <script>
 
-  var myDeepNetwork = new synaptic.Architect.Perceptron(
-    7, // Input layer with 7 neurons
-    3, // First hidden layer with 3 neurons
-    3, // Second hidden layer with 3 neurons
-    4 // Output layer with 4 neurons
-  );
+    var maxIndex = 0;
 
-  var trainingData = [];
-
-  for(var i = 1;i < 75; i++) {
-      var input = convertToBinaryArray(i); // Input layer
-      var output = [0,0,0,0]; // Undecided state of output layer
-
-      if(i <= 5)
-          output = [1,0,0,0]; // THICK JACKET
-      else if(i > 5 && i <= 15)
-          output = [0,1,0,0]; // SWEATER
-      else if(i > 15 && i <= 40)
-          output = [0,0,1,0]; // T-SHIRT
-      else
-          output = [0,0,0,1]; // NOTHING
-
-      trainingData.push({
-          input: input,
-          output: output
-      });
-  }
-
-  var myTrainer = new synaptic.Trainer(myDeepNetwork); // Create trainer
-  myTrainer.train(trainingData, {
-      rate: 0.1,
-      iterations: 10000,
-      shuffle: true
-  }); // Train with training data
-
-  var cTemp = convertToBinaryArray(11);
-  var recommendations = myDeepNetwork.activate(cTemp);
-
-  // Log neuron outputs
-  console.log("Temperature: " + "11°");
-  console.log("THICK JACKET neuron: " + (recommendations[0] * 100) + "%");
-  console.log("SWEATER neuron: " + (recommendations[1] * 100) + "%");
-  console.log("T-SHIRT neuron: " + (recommendations[2] * 100) + "%");
-  console.log("NOTHING neuron: " + (recommendations[3] * 100) + "%");
-
-  function convertToBinaryArray(temperature) {
-    var tempInBinary = temperature.toString(2); // Convert to binary
-
-    // If it is more than 7 digits long, truncate
-    if(tempInBinary.length > 7)
-        return [1,1,1,1,1,1,1];
-
-    // If it less than 7 digits long, add zeroes.
-    while(tempInBinary.length < 7) {
-        tempInBinary = "0" + tempInBinary;
+    function createDeepNetwork() {
+      var myDeepNetwork = new synaptic.Architect.Perceptron(
+        7, // Input layer with 7 neurons
+        3, // First hidden layer with 3 neurons
+        3, // Second hidden layer with 3 neurons
+        4 // Output layer with 4 neurons
+      );
+      return myDeepNetwork;
     }
 
-    // Convert string to array
-    return tempInBinary.split("").map(function(i) {
-        return parseInt(i); }
-    );
-  }
+    function createTrainingData() {
+      var trainingData = [];
+      for(var i = 1;i < 75; i++) {
+          var input = convertToBinaryArray(i); // Input layer
+          var output = [0,0,0,0]; // Undecided state of output layer
 
+          if(i <= 5)
+              output = [1,0,0,0]; // THICK JACKET
+          else if(i > 5 && i <= 15)
+              output = [0,1,0,0]; // SWEATER
+          else if(i > 15 && i <= 40)
+              output = [0,0,1,0]; // T-SHIRT
+          else
+              output = [0,0,0,1]; // NOTHING
+
+          trainingData.push({
+              input: input,
+              output: output
+          });
+      }
+      return trainingData;
+    }
+
+    function trainingNetwork(myDeepNetwork, trainingData) {
+      var myTrainer = new synaptic.Trainer(myDeepNetwork); // Create trainer
+      myTrainer.train(trainingData, {
+          rate: 0.1,
+          iterations: 10000,
+          shuffle: true
+      }); // Train with training data
+    }
+
+    function runNetwork(myDeepNetwork, temperature) {
+      var cTemp = convertToBinaryArray(temperature);
+      var recommendations = myDeepNetwork.activate(cTemp);
+
+      maxIndex = 0;
+      var maxValue = 0;
+      for (var i=0; i<=3; i++) {
+        var value = recommendations[i] * 100;
+        if (value > maxValue) {
+          maxValue = value;
+          maxIndex = i;
+        }
+        $('#'+i).html(value + "%");
+      }
+
+      $('#image_'+maxIndex).addClass('border border-success');
+    }
+
+    function convertToBinaryArray(temperature) {
+      var tempInBinary = temperature.toString(2); // Convert to binary
+
+      // If it is more than 7 digits long, truncate
+      if(tempInBinary.length > 7)
+          return [1,1,1,1,1,1,1];
+
+      // If it less than 7 digits long, add zeroes.
+      while(tempInBinary.length < 7) {
+          tempInBinary = "0" + tempInBinary;
+      }
+
+      // Convert string to array
+      return tempInBinary.split("").map(function(i) {
+          return parseInt(i); }
+      );
+    }
+
+    $('#temp_btn').on('click', function (obj){
+      $('#image_'+maxIndex).removeClass('border border-success');
+      var temp = $('#temp').val();
+      if (temp!="") {
+        var myDeepNetwork = createDeepNetwork();
+        var trainingData = createTrainingData();
+        trainingNetwork(myDeepNetwork, trainingData);
+        runNetwork(myDeepNetwork, parseInt(temp));
+      }
+    });
   </script>
 
   </body>
