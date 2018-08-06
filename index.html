@@ -115,7 +115,7 @@
           maxValue = value;
           maxIndex = i;
         }
-        $('#'+i).html(value + "%");
+        $('#'+i).html(value.toFixed(2) + "%");
       }
 
       $('#image_'+maxIndex).addClass('border border-success');
